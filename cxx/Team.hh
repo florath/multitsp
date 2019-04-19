@@ -8,10 +8,13 @@ class Team {
 public:
   Team(unsigned int id, unsigned int size, unsigned int entry_time);
 
+  unsigned int get_size() const { return size; }
+  unsigned int get_id() const { return id; }
+
 private:
-  unsigned int const id;
-  unsigned int const size;
-  unsigned int const entry_time;
+  unsigned int id;
+  unsigned int size;
+  unsigned int entry_time;
 };
 
 } // namespace MultiTSP

@@ -16,7 +16,7 @@ all: multitsp
 
 .PHONY: clean
 
-multitsp: main.o Config.o Team.o State.o
+multitsp: main.o Config.o Team.o State.o Tour.o
 	${CXX} $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 clean:

@@ -62,7 +62,10 @@ Config::Config(int argc, char *argv[]) {
       }
     }
 
-    teams.push_back(Team(line_cnt, std::stoi(sline[0]), std::stoi(sline[1])));
+    if (line_cnt != 0) {
+      // Ignore the school entry for the team list
+      teams.push_back(Team(line_cnt, std::stoi(sline[0]), std::stoi(sline[1])));
+    }
     std::vector<unsigned int> dists;
     for (unsigned int i(2); i < column_cnt; ++i) {
       dists.push_back(std::stoi(sline[i]));
