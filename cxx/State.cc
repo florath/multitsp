@@ -1,4 +1,5 @@
 #include "State.hh"
+#include "Util.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -36,17 +37,12 @@ State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
     assign_team(team, tours);
   }
 
-  std::cout << "State " << *this << std::endl;
+  std::cout << *this << std::endl;
 }
 
 std::ostream &State::print(std::ostream &ostr) const {
-  ostr << "cnt [" << tour_cnt << "] spaces [" << spaces_per_tour_cnt << "] [";
-  unsigned int tc(0);
-  for (auto const &tour : tours) {
-    ostr << tc << ":" << tour << " ";
-    ++tc;
-  }
-  ostr << "]";
+  ostr << "{\"cnt\": " << tour_cnt << ", \"spaces\": " << spaces_per_tour_cnt
+       << ", \"tour\": [" << join<Tour>(tours.begin(), tours.end()) << "]}";
   return ostr;
 }
 

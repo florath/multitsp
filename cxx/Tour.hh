@@ -13,24 +13,17 @@ class Tour {
 public:
   Tour(std::vector<Team> const &teams, unsigned int max_size);
 
-  bool fit(unsigned int tsize) const {
-    return size + tsize <= max_size; }
+  bool fit(unsigned int tsize) const { return size + tsize <= max_size; }
   void push_back(unsigned int id) {
     ids.push_back(id);
-    assert(teams[id-1].get_id() == id);
-    size += teams[id-1].get_size();
+    assert(teams[id - 1].get_id() == id);
+    size += teams[id - 1].get_size();
     assert(size <= max_size);
   }
 
-  std::ostream &print(std::ostream &ostr) const {
-    ostr << "[Tour size [" << size << "] max [" << max_size << "] [";
-    for (auto id : ids) {
-      ostr << id << " ";
-    }
-    ostr << "]";
+  std::string to_string() const;
 
-    return ostr;
-  }
+  std::ostream &print(std::ostream &ostr) const;
 
 private:
   unsigned int size;
@@ -38,11 +31,16 @@ private:
   std::vector<Team> const &teams;
   std::vector<unsigned int> ids;
 };
+
 } // namespace MultiTSP
 
 inline std::ostream &operator<<(std::ostream &stream,
                                 MultiTSP::Tour const &tour) {
   return tour.print(stream);
 }
+
+namespace std {
+inline std::string to_string(MultiTSP::Tour const &t) { return t.to_string(); }
+} // namespace std
 
 #endif

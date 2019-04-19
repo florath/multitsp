@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
   DistMatrix const &dists(config.get_distances());
 
-  std::cout << "Absolut minimum: " << compute_absolut_minimum(dists)
+  std::cout << "{\"abs_min\": " << compute_absolut_minimum(dists) << "}"
             << std::endl;
 
   State state(config.get_tour_cnt(), config.get_spaces_per_tour_cnt(),
