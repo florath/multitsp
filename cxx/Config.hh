@@ -3,11 +3,11 @@
 
 namespace MultiTSP {
 
-  class Config {
-  public:
-    Config(int argc, char *argv[]);
-  };
- 
-}
+class Config {
+public:
+  Config(int argc, char *argv[]);
+};
+
+} // namespace MultiTSP
 
 #endif
