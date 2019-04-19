@@ -1,7 +1,8 @@
 CC=gcc
 CXX=g++
 DEBUG=-ggdb -O0 -march=native
-CFLAGS:=$(DEBUG) -W -Wall -Wextra -Wpedantic -pedantic -ansi
+CFLAGS:=$(DEBUG) -W -Wall -Wextra -Wpedantic -pedantic
+CXXFLAGS:=$(DEBUG) -W -Wall -Wextra -Wpedantic -pedantic
 LDLIBS:=-l:libboost_program_options.so.1.67.0
 OUTPUT_OPTION=-MMD -MP -o $@
 
@@ -15,7 +16,7 @@ all: multitsp
 
 .PHONY: clean
 
-multitsp: main.o Config.o
+multitsp: main.o Config.o Team.o State.o
 	${CXX} $^ $(LOADLIBES) $(LDLIBS) -o $@
 
 clean:
