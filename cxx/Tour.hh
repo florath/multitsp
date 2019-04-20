@@ -3,44 +3,53 @@
 
 #include <cassert>
 #include <iostream>
+#include <string>
 #include <vector>
 
+#include "DistMatrix.hh"
+#include "Rating.hh"
 #include "Team.hh"
+#include "TeamId.hh"
+#include "TeamSet.hh"
 
 namespace MultiTSP {
 
 class Tour {
 public:
-  Tour(std::vector<Team> const &teams, unsigned int max_size);
+  Tour(DistMatrix const &dists, Rating2Value const &rating2value,
+       TeamSet const &teams, unsigned int max_places);
 
-  bool fit(unsigned int tsize) const { return size + tsize <= max_size; }
-  void push_back(unsigned int id) {
+  bool fit(unsigned int tsize) const {
+    return places_used + tsize <= max_places;
+  }
+  void push_back(TeamId_t const id) {
     ids.push_back(id);
-    assert(teams[id - 1].get_id() == id);
-    size += teams[id - 1].get_size();
-    assert(size <= max_size);
+    // ???? ToDo:    assert(teams[id].get_id() == id);
+    places_used += teams[id].get_size();
+    assert(places_used <= max_places);
   }
 
-  std::string to_string() const;
+  std::string to_json() const;
+  void optimize();
 
-  std::ostream &print(std::ostream &ostr) const;
+  Rating compute_rating() const;
+
+  //  std::ostream &print(std::ostream &ostr) const;
 
 private:
-  unsigned int size;
-  unsigned int const max_size;
-  std::vector<Team> const &teams;
-  std::vector<unsigned int> ids;
+  unsigned int const max_places;
+  DistMatrix const &dists;
+  Rating2Value const &rating2value;
+  TeamSet const &teams;
+
+  unsigned int places_used;
+  std::vector<TeamId_t> ids;
 };
 
 } // namespace MultiTSP
 
-inline std::ostream &operator<<(std::ostream &stream,
-                                MultiTSP::Tour const &tour) {
-  return tour.print(stream);
-}
-
 namespace std {
-inline std::string to_string(MultiTSP::Tour const &t) { return t.to_string(); }
+inline std::string to_string(MultiTSP::Tour const &t) { return t.to_json(); }
 } // namespace std
 
 #endif

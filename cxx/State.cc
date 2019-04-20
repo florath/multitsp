@@ -1,5 +1,6 @@
 #include "State.hh"
 #include "Util.hh"
+#include "Value.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -19,16 +20,17 @@ void assign_team(Team const &team, std::vector<Tour> &tours) {
 } // namespace
 
 State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
-             std::vector<Team> const &p_teams, DistMatrix const &p_dists)
+             Rating2Value const &p_rating2value,
+             TeamSet const &p_teams, DistMatrix const &p_dists)
     : teams(p_teams), dists(p_dists), tour_cnt(p_tour_cnt),
-      spaces_per_tour_cnt(p_spaces_per_tour_cnt) {
+      spaces_per_tour_cnt(p_spaces_per_tour_cnt), rating2value(p_rating2value) {
   tours.reserve(tour_cnt);
   for (unsigned int i(0); i < tour_cnt; ++i) {
-    tours.push_back(Tour(teams, spaces_per_tour_cnt));
+    tours.push_back(Tour(dists, rating2value, teams, spaces_per_tour_cnt));
   }
 
   // Need to sort the teams: start with the teams with the most members.
-  std::vector<Team> tc(teams);
+  TeamSet tc(teams);
   std::sort(tc.begin(), tc.end(), [](Team const &x, Team const &y) -> bool {
     return x.get_size() > y.get_size();
   });
@@ -36,14 +38,29 @@ State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
   for (auto const &team : tc) {
     assign_team(team, tours);
   }
-
-  std::cout << *this << std::endl;
 }
 
-std::ostream &State::print(std::ostream &ostr) const {
+std::ostream &State::as_json(std::ostream &ostr) const {
+  Rating const rating(compute_rating());
+  Value const value(rating * rating2value);
   ostr << "{\"cnt\": " << tour_cnt << ", \"spaces\": " << spaces_per_tour_cnt
+       << ", \"rating\": " << rating.as_json() << ", \"value\": " << value
        << ", \"tour\": [" << join<Tour>(tours.begin(), tours.end()) << "]}";
   return ostr;
+}
+
+Rating State::compute_rating() const {
+  Rating rating;
+  for (auto tour : tours) {
+    rating += tour.compute_rating();
+  }
+  return rating;
+}
+
+void State::optimize_local() {
+  for (auto &tour : tours) {
+    tour.optimize();
+  }
 }
 
 } // namespace MultiTSP
