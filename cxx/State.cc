@@ -3,6 +3,8 @@
 #include "Value.hh"
 
 #include <algorithm>
+#include <chrono>
+#include <iomanip>
 #include <iostream>
 
 #undef TRACE_STATE
@@ -42,12 +44,22 @@ State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
   }
 }
 
-std::ostream &State::as_json(std::ostream &ostr) const {
+std::ostream &State::as_json(std::ostream &ostr,
+                             std::string const &comment) const {
   Rating const rating(compute_rating());
   Value const value(rating * rating2value);
-  ostr << "{\"cnt\": " << tour_cnt << ", \"spaces\": " << spaces_per_tour_cnt
-       << ", \"rating\": " << rating.as_json() << ", \"value\": " << value
-       << ", \"tour\": [" << join<Tour>(tours.begin(), tours.end()) << "]}";
+
+  std::chrono::time_point<std::chrono::system_clock> now =
+      std::chrono::system_clock::now();
+  time_t now_time = std::chrono::system_clock::to_time_t(now);
+  auto gmt_time = gmtime(&now_time);
+  auto timestamp = std::put_time(gmt_time, "%Y-%m-%d %H:%M:%S");
+
+  ostr << "{\"timestamp\": \"" << timestamp
+       << "\", \"rating\": " << rating.as_json() << ", \"value\": " << value
+       << ", \"comment\": \"" << comment << "\", \"cnt\": " << tour_cnt
+       << ", \"spaces\": " << spaces_per_tour_cnt << ", \"tour\": ["
+       << join<Tour>(tours.begin(), tours.end()) << "]}";
   return ostr;
 }
 

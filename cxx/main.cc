@@ -1,6 +1,7 @@
 #include "Config.hh"
 #include "State.hh"
 #include <cmath>
+#include <ctime>
 #include <iostream>
 
 using namespace MultiTSP;
@@ -74,8 +75,8 @@ int sa(Config const &config, State const &initial_state) {
         opt_rating = new_rating;
         opt_value = new_value;
 
-        opt_state.as_json(std::cerr);
-	std::cerr << std::endl;
+        opt_state.as_json(std::cout, "intermediate");
+        std::cout << std::endl;
 
         sa_round_with_same_opt_cnt = 0;
       }
@@ -92,9 +93,8 @@ int sa(Config const &config, State const &initial_state) {
     // Exit algorithm if 5e6 times no better state was
     // accepted (~1h CPU time)
     if (sa_round_with_same_opt_cnt >= 5000000) {
-      std::cerr << "BEST" << std::endl;
-      opt_state.as_json(std::cerr);
-      std::cerr << std::endl;
+      opt_state.as_json(std::cout, "final");
+      std::cout << std::endl;
       return 0;
     }
   }
@@ -116,9 +116,9 @@ int main(int argc, char *argv[]) {
 
   State state(config.get_tour_cnt(), config.get_spaces_per_tour_cnt(),
               config.get_rating2value(), config.get_teams(), dists);
-  state.as_json(std::cout);
+  state.as_json(std::cout, "random");
   state.optimize_local();
-  state.as_json(std::cout);
+  state.as_json(std::cout, "radom local optimized");
 
   sa(config, state);
 

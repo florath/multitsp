@@ -120,13 +120,14 @@ bool Tour::try_swap(Tour &other) {
 #endif
   random_shuffle(std::begin(both_ids), std::end(both_ids));
 #ifdef TRACE_TOUR
-  std::cerr << "BothIds shuffle" << join<TeamId_t>(both_ids.begin(), both_ids.end())
-            << std::endl;
+  std::cerr << "BothIds shuffle"
+            << join<TeamId_t>(both_ids.begin(), both_ids.end()) << std::endl;
 #endif
 
   Tour n1(dists, rating2value, teams, max_places);
   Tour n2(dists, rating2value, teams, max_places);
 
+  bool skip_first_n1(true);
   for (auto const bid : both_ids) {
     unsigned int bid_size(teams[bid].get_size());
 #ifdef TRACE_TOUR
@@ -135,12 +136,21 @@ bool Tour::try_swap(Tour &other) {
     std::cerr << "N1 " << n1.as_json() << std::endl;
     std::cerr << "N2 " << n2.as_json() << std::endl;
 #endif
-    if (n1.fit(bid_size)) {
-      n1.push_back(bid);
-      continue;
+
+    skip_first_n1 = !skip_first_n1;
+
+    if (!skip_first_n1) {
+      if (n1.fit(bid_size)) {
+        n1.push_back(bid);
+        continue;
+      }
     }
     if (n2.fit(bid_size)) {
       n2.push_back(bid);
+      continue;
+    }
+    if (n1.fit(bid_size)) {
+      n1.push_back(bid);
       continue;
     }
     return false;

@@ -3,7 +3,7 @@ CXX=g++
 #DEBUG=-ggdb -O0 -march=native
 OPT=-O3
 CFLAGS:=$(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic
-CXXFLAGS:=$(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic -I.
+CXXFLAGS:=-std=c++17 $(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic -I.
 LDLIBS:=-l:libboost_program_options.so.1.67.0
 OUTPUT_OPTION=-MMD -MP -o $@
 

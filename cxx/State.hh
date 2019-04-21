@@ -25,7 +25,7 @@ public:
   void optimize_local();
   void swap();
 
-  std::ostream &as_json(std::ostream &ostr) const;
+  std::ostream &as_json(std::ostream &ostr, std::string const & comment) const;
 
 private:
   bool try_swap();
