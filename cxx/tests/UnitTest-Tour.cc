@@ -3,8 +3,8 @@
 #include <boost/test/unit_test.hpp>
 
 #include "Rating2Value.hh"
-#include "Tour.hh"
 #include "State.hh"
+#include "Tour.hh"
 
 class UnitTestTour {
 public:
@@ -61,5 +61,6 @@ BOOST_AUTO_TEST_CASE(tour_state_local_optimize) {
   MultiTSP::Rating const rating_state_after(state.compute_rating());
   state.as_json(std::cerr);
   BOOST_TEST(rating_state_after == MultiTSP::Rating(212, 386));
+#if 0  
+#endif
 }
-

@@ -13,21 +13,30 @@ namespace MultiTSP {
 class State {
 public:
   State(unsigned int tour_cnt, unsigned int spaces_per_tour_cnt,
-        Rating2Value const & rating2value, TeamSet const &p_teams,
+        Rating2Value const &rating2value, TeamSet const &p_teams,
         DistMatrix const &p_dists);
+
+  State &operator=(State const &other) {
+    this->tours = other.tours;
+    return *this;
+  }
 
   Rating compute_rating() const;
   void optimize_local();
+  void swap();
 
   std::ostream &as_json(std::ostream &ostr) const;
 
 private:
+  bool try_swap();
+  
   TeamSet const &teams;
   DistMatrix const &dists;
   unsigned int const tour_cnt;
   unsigned int const spaces_per_tour_cnt;
-  std::vector<Tour> tours;
   Rating2Value const &rating2value;
+
+  std::vector<Tour> tours;
 };
 
 } // namespace MultiTSP

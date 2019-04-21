@@ -29,12 +29,20 @@ public:
     assert(places_used <= max_places);
   }
 
+  Tour &operator=(Tour const &other) {
+    places_used = other.places_used;
+    ids = other.ids;
+    return *this;
+  }
+
   std::string as_json() const;
   void optimize();
 
   Rating compute_rating() const;
 
   //  std::ostream &print(std::ostream &ostr) const;
+
+  bool try_swap(Tour & other);
 
 private:
   unsigned int const max_places;

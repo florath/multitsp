@@ -1,8 +1,9 @@
 CC=gcc
 CXX=g++
-DEBUG=-ggdb -O0 -march=native
-CFLAGS:=$(DEBUG) -W -Wall -Wextra -Wpedantic -pedantic
-CXXFLAGS:=$(DEBUG) -W -Wall -Wextra -Wpedantic -pedantic -I.
+#DEBUG=-ggdb -O0 -march=native
+OPT=-O3
+CFLAGS:=$(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic
+CXXFLAGS:=$(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic -I.
 LDLIBS:=-l:libboost_program_options.so.1.67.0
 OUTPUT_OPTION=-MMD -MP -o $@
 
@@ -26,7 +27,7 @@ tests/UnitTest-Tour: tests/UnitTest-Tour.o Tour.o Team.o Rating.o State.o
 	${CXX} $^ $(LOADLIBES) -l:libboost_unit_test_framework.so.1.67.0 -o $@
 
 clean:
-	-rm -f $(OBJ) $(DEP) multitsp
+	-rm -f $(OBJ) $(DEP) multitsp tests/UnitTest-Tour check_input
 
 tests: all
 	tests/UnitTest-Tour
