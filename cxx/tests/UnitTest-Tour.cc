@@ -4,13 +4,14 @@
 
 #include "Rating2Value.hh"
 #include "Tour.hh"
+#include "State.hh"
 
 class UnitTestTour {
 public:
   UnitTestTour()
       : dists{{0, 1, 2, 3}, {5, 0, 7, 11}, {13, 17, 0, 19}, {23, 29, 31, 0}},
         rating2value(1.0, 1.0), teams({{MultiTSP::TeamId_t(1), 1, 47},
-                                       {MultiTSP::TeamId_t(2), 2, 53},
+                                       {MultiTSP::TeamId_t(2), 1, 53},
                                        {MultiTSP::TeamId_t(3), 1, 59}}),
         tour(dists, rating2value, teams, 4) {}
 
@@ -49,3 +50,16 @@ BOOST_AUTO_TEST_CASE(tour_three) {
   MultiTSP::Rating const rating(utt.tour.compute_rating());
   BOOST_TEST(rating == MultiTSP::Rating(208, 444));
 }
+
+BOOST_AUTO_TEST_CASE(tour_state_local_optimize) {
+  UnitTestTour utt;
+  MultiTSP::State state(1, 4, utt.rating2value, utt.teams, utt.dists);
+
+  MultiTSP::Rating const rating_state_before(state.compute_rating());
+  BOOST_TEST(rating_state_before == MultiTSP::Rating(208, 444));
+  state.optimize_local();
+  MultiTSP::Rating const rating_state_after(state.compute_rating());
+  state.as_json(std::cerr);
+  BOOST_TEST(rating_state_after == MultiTSP::Rating(212, 386));
+}
+

@@ -13,9 +13,13 @@ Tour::Tour(DistMatrix const &p_dists, Rating2Value const &p_rating2value,
   assert(dists[0].size() == dists.size());
 }
 
-std::string Tour::to_json() const {
+std::string Tour::as_json() const {
+  Rating const rating(compute_rating());
+  Value const value(rating * rating2value);
   std::string res("{\"places\": " + std::to_string(places_used) +
-                  ", \"max\": " + std::to_string(max_places) + ", \"ids\": [");
+                  ", \"max\": " + std::to_string(max_places) +
+                  ", \"rating\": " + rating.as_json() +
+                  ", \"value\": " + std::to_string(value) + ", \"ids\": [");
   res += join<TeamId_t>(ids.begin(), ids.end()) + "]}";
   return res;
 }

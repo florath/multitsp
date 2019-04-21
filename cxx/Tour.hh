@@ -29,7 +29,7 @@ public:
     assert(places_used <= max_places);
   }
 
-  std::string to_json() const;
+  std::string as_json() const;
   void optimize();
 
   Rating compute_rating() const;
@@ -49,7 +49,7 @@ private:
 } // namespace MultiTSP
 
 namespace std {
-inline std::string to_string(MultiTSP::Tour const &t) { return t.to_json(); }
+inline std::string to_string(MultiTSP::Tour const &t) { return t.as_json(); }
 } // namespace std
 
 #endif

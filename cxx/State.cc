@@ -5,6 +5,8 @@
 #include <algorithm>
 #include <iostream>
 
+#define TRACE_STATE
+
 namespace MultiTSP {
 
 namespace {
@@ -51,9 +53,18 @@ std::ostream &State::as_json(std::ostream &ostr) const {
 
 Rating State::compute_rating() const {
   Rating rating;
+#ifdef TRACE_STATE
+  std::cerr << "State::compute_rating start " << rating.as_json() << std::endl;
+#endif
   for (auto tour : tours) {
     rating += tour.compute_rating();
+#ifdef TRACE_STATE
+  std::cerr << "State::compute_rating inc " << rating.as_json() << std::endl;
+#endif
   }
+#ifdef TRACE_STATE
+  std::cerr << "State::compute_rating final " << rating.as_json() << std::endl;
+#endif
   return rating;
 }
 

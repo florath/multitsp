@@ -10,7 +10,7 @@ SRC:=$(wildcard *.cc)
 OBJ:=$(SRC:.cc=.o)
 DEP:=$(SRC:.cc=.d)
 
-all: multitsp tests/UnitTest-Tour
+all: multitsp check_input tests/UnitTest-Tour
 
 -include $(DEP)
 
@@ -19,7 +19,10 @@ all: multitsp tests/UnitTest-Tour
 multitsp: main.o Config.o Team.o State.o Tour.o Rating.o
 	${CXX} $^ $(LOADLIBES) $(LDLIBS) -o $@
 
-tests/UnitTest-Tour: tests/UnitTest-Tour.o Tour.o Team.o Rating.o
+check_input: check_input.o Config.o Team.o
+	${CXX} $^ $(LOADLIBES) $(LDLIBS) -o $@
+
+tests/UnitTest-Tour: tests/UnitTest-Tour.o Tour.o Team.o Rating.o State.o
 	${CXX} $^ $(LOADLIBES) -l:libboost_unit_test_framework.so.1.67.0 -o $@
 
 clean:
