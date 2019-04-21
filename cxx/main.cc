@@ -75,7 +75,7 @@ int sa(Config const &config, State const &initial_state) {
         opt_rating = new_rating;
         opt_value = new_value;
 
-        opt_state.as_json(std::cout, "intermediate");
+        opt_state.as_json(std::cout, "intermediate", sa_round_idx);
         std::cout << std::endl;
 
         sa_round_with_same_opt_cnt = 0;
@@ -93,7 +93,7 @@ int sa(Config const &config, State const &initial_state) {
     // Exit algorithm if 5e6 times no better state was
     // accepted (~1h CPU time)
     if (sa_round_with_same_opt_cnt >= 5000000) {
-      opt_state.as_json(std::cout, "final");
+      opt_state.as_json(std::cout, "final", sa_round_idx);
       std::cout << std::endl;
       return 0;
     }

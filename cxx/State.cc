@@ -44,8 +44,8 @@ State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
   }
 }
 
-std::ostream &State::as_json(std::ostream &ostr,
-                             std::string const &comment) const {
+std::ostream &State::as_json(std::ostream &ostr, std::string const &comment,
+                             unsigned long round) const {
   Rating const rating(compute_rating());
   Value const value(rating * rating2value);
 
@@ -57,9 +57,9 @@ std::ostream &State::as_json(std::ostream &ostr,
 
   ostr << "{\"timestamp\": \"" << timestamp
        << "\", \"rating\": " << rating.as_json() << ", \"value\": " << value
-       << ", \"comment\": \"" << comment << "\", \"cnt\": " << tour_cnt
-       << ", \"spaces\": " << spaces_per_tour_cnt << ", \"tour\": ["
-       << join<Tour>(tours.begin(), tours.end()) << "]}";
+       << ", \"comment\": \"" << comment << ", \"round\": " << round
+       << "\", \"cnt\": " << tour_cnt << ", \"spaces\": " << spaces_per_tour_cnt
+       << ", \"tour\": [" << join<Tour>(tours.begin(), tours.end()) << "]}";
   return ostr;
 }
 

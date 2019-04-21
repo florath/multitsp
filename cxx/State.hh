@@ -25,11 +25,12 @@ public:
   void optimize_local();
   void swap();
 
-  std::ostream &as_json(std::ostream &ostr, std::string const & comment) const;
+  std::ostream &as_json(std::ostream &ostr, std::string const &comment,
+                        unsigned long round = 0) const;
 
 private:
   bool try_swap();
-  
+
   TeamSet const &teams;
   DistMatrix const &dists;
   unsigned int const tour_cnt;
