@@ -7,6 +7,8 @@
 #include <iomanip>
 #include <iostream>
 
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 #undef TRACE_STATE
 
 namespace MultiTSP {
@@ -46,24 +48,23 @@ State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
   }
 }
 
-std::ostream &State::as_json(std::ostream &ostr, std::string const &comment,
-                             unsigned long round) const {
+std::string State::as_json(std::string const &comment,
+                           unsigned long round) const {
   Rating const rating(compute_rating());
   Value const value(rating * rating2value);
 
-  std::chrono::time_point<std::chrono::system_clock> now =
-      std::chrono::system_clock::now();
-  time_t now_time = std::chrono::system_clock::to_time_t(now);
-  auto gmt_time = gmtime(&now_time);
-  auto timestamp = std::put_time(gmt_time, "%Y-%m-%d %H:%M:%S");
+  boost::posix_time::ptime const timestamp(
+      boost::posix_time::second_clock::universal_time());
 
-  ostr << "{\"timestamp\": \"" << timestamp
-       << "\", \"rating\": " << rating.as_json() << ", \"value\": " << value
-       << ", \"comment\": \"" << comment << "\", \"round\": " << round
-       << ", \"cnt\": " << tour_cnt << ", \"spaces\": " << spaces_per_tour_cnt
-       << ", \"random-seed\": " << random_seed << ", \"host-id\": " << host_id
-       << ", \"tour\": [" << join<Tour>(tours.begin(), tours.end()) << "]}";
-  return ostr;
+  return std::string("{\"timestamp\": \"") + to_iso_extended_string(timestamp) +
+         "\", \"rating\": " + rating.as_json() +
+         ", \"value\": " + std::to_string(value) + ", \"comment\": \"" +
+         comment + "\", \"round\": " + std::to_string(round) +
+         ", \"cnt\": " + std::to_string(tour_cnt) +
+         ", \"spaces\": " + std::to_string(spaces_per_tour_cnt) +
+         ", \"random-seed\": " + std::to_string(random_seed) +
+         ", \"host-id\": \"" + host_id + "\", \"tour\": [" +
+         join<Tour>(tours.begin(), tours.end()) + "]}";
 }
 
 Rating State::compute_rating() const {

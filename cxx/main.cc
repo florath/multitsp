@@ -12,17 +12,18 @@ inline double drnadom() { return ((double)random()) / RAND_MAX; }
 
 int sa(Config const &config, unsigned long random_seed) {
 
+  std::cerr << "T1" << std::endl;
+  
   std::mt19937 rng(random_seed);
 
+  std::cerr << "T2" << std::endl;
   DistMatrix const &dists(config.get_distances());
   State state(config.get_tour_cnt(), config.get_spaces_per_tour_cnt(),
               config.get_rating2value(), config.get_teams(), dists, rng,
               random_seed, config.get_host_id());
-  state.as_json(std::cout, "random");
-  std::cout << std::endl;
+  std::cout << state.as_json("random") << std::endl;
   state.optimize_local();
-  state.as_json(std::cout, "random local optimized");
-  std::cout << std::endl;
+  std::cout << state.as_json("random local optimized") << std::endl;
 
   // This algorithm uses three different state / result pairs:
   // 1. the optimal state
@@ -77,8 +78,8 @@ int sa(Config const &config, unsigned long random_seed) {
         opt_rating = new_rating;
         opt_value = new_value;
 
-        opt_state.as_json(std::cout, "intermediate", sa_round_idx);
-        std::cout << std::endl;
+        std::cout << opt_state.as_json("intermediate", sa_round_idx)
+                  << std::endl;
 
         sa_round_with_same_opt_cnt = 0;
       }
@@ -95,8 +96,7 @@ int sa(Config const &config, unsigned long random_seed) {
     // Exit algorithm if 5e6 times no better state was
     // accepted (~1h CPU time)
     if (sa_round_with_same_opt_cnt >= 5000000) {
-      opt_state.as_json(std::cout, "final", sa_round_idx);
-      std::cout << std::endl;
+      std::cout << opt_state.as_json("final", sa_round_idx) << std::endl;
       return 0;
     }
   }
