@@ -92,7 +92,8 @@ int sa(Config const &config, State const &initial_state) {
 
     // Exit algorithm if 5e6 times no better state was
     // accepted (~1h CPU time)
-    if (sa_round_with_same_opt_cnt >= 5000000) {
+    //    if (sa_round_with_same_opt_cnt >= 5000000) {
+    if (sa_round_with_same_opt_cnt >= 50000) {
       opt_state.as_json(std::cout, "final", sa_round_idx);
       std::cout << std::endl;
       return 0;

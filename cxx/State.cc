@@ -57,8 +57,8 @@ std::ostream &State::as_json(std::ostream &ostr, std::string const &comment,
 
   ostr << "{\"timestamp\": \"" << timestamp
        << "\", \"rating\": " << rating.as_json() << ", \"value\": " << value
-       << ", \"comment\": \"" << comment << ", \"round\": " << round
-       << "\", \"cnt\": " << tour_cnt << ", \"spaces\": " << spaces_per_tour_cnt
+       << ", \"comment\": \"" << comment << "\", \"round\": " << round
+       << ", \"cnt\": " << tour_cnt << ", \"spaces\": " << spaces_per_tour_cnt
        << ", \"tour\": [" << join<Tour>(tours.begin(), tours.end()) << "]}";
   return ostr;
 }
