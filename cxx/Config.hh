@@ -20,6 +20,7 @@ public:
   unsigned int get_tour_cnt() const { return tour_cnt; }
   Rating2Value const & get_rating2value() const { return rating2value; }
   std::string const & get_host_id() const { return host_id; }
+  unsigned int get_thread_cnt() const { return thread_cnt; }
 
 private:
   TeamSet teams;

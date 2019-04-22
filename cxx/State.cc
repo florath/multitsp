@@ -6,6 +6,7 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
+#include <thread>
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
@@ -52,6 +53,7 @@ std::string State::as_json(std::string const &comment,
                            unsigned long round) const {
   Rating const rating(compute_rating());
   Value const value(rating * rating2value);
+  std::hash<std::thread::id> hasher;
 
   boost::posix_time::ptime const timestamp(
       boost::posix_time::second_clock::universal_time());
@@ -60,6 +62,8 @@ std::string State::as_json(std::string const &comment,
          "\", \"rating\": " + rating.as_json() +
          ", \"value\": " + std::to_string(value) + ", \"comment\": \"" +
          comment + "\", \"round\": " + std::to_string(round) +
+         ", \"thread-id\": " +
+         std::to_string(hasher(std::this_thread::get_id())) +
          ", \"tour-cnt\": " + std::to_string(tour_cnt) +
          ", \"spaces\": " + std::to_string(spaces_per_tour_cnt) +
          ", \"random-seed\": " + std::to_string(random_seed) +

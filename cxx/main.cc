@@ -2,13 +2,16 @@
 #include "State.hh"
 #include <cmath>
 #include <ctime>
+#include <future>
 #include <iostream>
 
 using namespace MultiTSP;
 
 namespace {
 
-int sa(Config const &config, unsigned long random_seed) {
+std::mutex cout_mutex;
+
+double sa(Config const &config, unsigned long random_seed) {
 
   std::mt19937 rng(random_seed);
   std::uniform_real_distribution<double> unif(0.0, 1.0);
@@ -17,9 +20,15 @@ int sa(Config const &config, unsigned long random_seed) {
   State state(config.get_tour_cnt(), config.get_spaces_per_tour_cnt(),
               config.get_rating2value(), config.get_teams(), dists, rng,
               random_seed, config.get_host_id());
-  std::cout << state.as_json("random") << std::endl;
+  {
+    std::lock_guard<std::mutex> lock(cout_mutex);
+    std::cout << state.as_json("random") << std::endl;
+  }
   state.optimize_local();
-  std::cout << state.as_json("random local optimized") << std::endl;
+  {
+    std::lock_guard<std::mutex> lock(cout_mutex);
+    std::cout << state.as_json("random local optimized") << std::endl;
+  }
 
   // This algorithm uses three different state / result pairs:
   // 1. the optimal state
@@ -74,8 +83,11 @@ int sa(Config const &config, unsigned long random_seed) {
         opt_rating = new_rating;
         opt_value = new_value;
 
-        std::cout << opt_state.as_json("intermediate", sa_round_idx)
-                  << std::endl;
+        {
+          std::lock_guard<std::mutex> lock(cout_mutex);
+          std::cout << opt_state.as_json("intermediate", sa_round_idx)
+                    << std::endl;
+        }
 
         sa_round_with_same_opt_cnt = 0;
       }
@@ -92,8 +104,11 @@ int sa(Config const &config, unsigned long random_seed) {
     // Exit algorithm if 5e6 times no better state was
     // accepted (~1h CPU time)
     if (sa_round_with_same_opt_cnt >= 5000000) {
-      std::cout << opt_state.as_json("final", sa_round_idx) << std::endl;
-      return 0;
+      {
+        std::lock_guard<std::mutex> lock(cout_mutex);
+        std::cout << opt_state.as_json("final", sa_round_idx) << std::endl;
+      }
+      return opt_value;
     }
   }
 }
@@ -109,7 +124,23 @@ int main(int argc, char *argv[]) {
   std::uniform_int_distribution<std::mt19937::result_type> dist(
       0, std::numeric_limits<unsigned long>::max());
 
-  sa(config, dist(rng));
+  unsigned int const thread_cnt(config.get_thread_cnt());
 
+  // Initial start
+  std::vector<std::future<double>> results;
+  for (unsigned int tidx(0); tidx < thread_cnt; ++tidx) {
+    results.push_back(std::async(std::launch::async, sa, config, dist(rng)));
+  }
+
+  // Forever!
+  while (true) {
+    for (auto &result : results) {
+      auto const wait_result(result.wait_for(std::chrono::seconds(10)));
+      if (wait_result == std::future_status::ready) {
+        // std::cerr << "Optimal value: " << result.get() << std::endl;
+        result = std::async(std::launch::async, sa, config, dist(rng));
+      }
+    }
+  }
   return 0;
 }
