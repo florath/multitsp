@@ -1,6 +1,6 @@
 CC=gcc
 CXX=g++
-#DEBUG=-ggdb -O0 -march=native
+DEBUG=-ggdb -O0 -march=native
 OPT=-O3
 CFLAGS:=$(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic
 CXXFLAGS:=-std=c++17 $(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic -I.

@@ -60,10 +60,10 @@ std::string State::as_json(std::string const &comment,
          "\", \"rating\": " + rating.as_json() +
          ", \"value\": " + std::to_string(value) + ", \"comment\": \"" +
          comment + "\", \"round\": " + std::to_string(round) +
-         ", \"cnt\": " + std::to_string(tour_cnt) +
+         ", \"tour-cnt\": " + std::to_string(tour_cnt) +
          ", \"spaces\": " + std::to_string(spaces_per_tour_cnt) +
          ", \"random-seed\": " + std::to_string(random_seed) +
-         ", \"host-id\": \"" + host_id + "\", \"tour\": [" +
+         ", \"host-id\": \"" + host_id + "\", \"tours\": [" +
          join<Tour>(tours.begin(), tours.end()) + "]}";
 }
 
@@ -91,13 +91,16 @@ void State::optimize_local() {
 }
 
 bool State::try_swap() {
-  unsigned int const t1(random() % tours.size());
-  unsigned int const t2(random() % tours.size());
+  std::uniform_int_distribution<std::mt19937::result_type> dist(
+      0, tours.size() - 1);
+
+  unsigned int const t1(dist(rng));
+  unsigned int const t2(dist(rng));
   if (t1 == t2) {
     return false;
   }
 
-  return tours[t1].try_swap(tours[t2]);
+  return tours[t1].try_swap(tours[t2], rng);
 }
 
 void State::swap() {

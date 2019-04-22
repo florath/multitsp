@@ -8,15 +8,11 @@ using namespace MultiTSP;
 
 namespace {
 
-inline double drnadom() { return ((double)random()) / RAND_MAX; }
-
 int sa(Config const &config, unsigned long random_seed) {
 
-  std::cerr << "T1" << std::endl;
-  
   std::mt19937 rng(random_seed);
+  std::uniform_real_distribution<double> unif(0.0, 1.0);
 
-  std::cerr << "T2" << std::endl;
   DistMatrix const &dists(config.get_distances());
   State state(config.get_tour_cnt(), config.get_spaces_per_tour_cnt(),
               config.get_rating2value(), config.get_teams(), dists, rng,
@@ -67,7 +63,7 @@ int sa(Config const &config, unsigned long random_seed) {
       double const diff(new_value - current_value);
       // Always accept if it's getting better or
       // limited depending on the current temperature.
-      if (diff < 0 || drnadom() < exp(-((double)diff) / temp)) {
+      if (diff < 0 || unif(rng) < exp(-((double)diff) / temp)) {
         current_state = new_state;
         current_rating = new_rating;
         current_value = new_value;
@@ -105,9 +101,6 @@ int sa(Config const &config, unsigned long random_seed) {
 } // namespace
 
 int main(int argc, char *argv[]) {
-
-  time_t const tseed(time(0));
-  srandom(tseed);
 
   Config const config(argc, argv);
 

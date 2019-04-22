@@ -5,6 +5,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <random>
 
 #include "DistMatrix.hh"
 #include "Rating.hh"
@@ -41,7 +42,7 @@ public:
   std::string as_json() const;
   void optimize();
   Rating compute_rating() const;
-  bool try_swap(Tour &other);
+  bool try_swap(Tour &other, std::mt19937 &rng);
 
 private:
   // If the rating is not valid, compute it.

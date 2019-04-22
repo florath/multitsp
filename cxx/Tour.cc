@@ -118,7 +118,7 @@ void Tour::optimize() {
   ids = opt;
 }
 
-bool Tour::try_swap(Tour &other) {
+  bool Tour::try_swap(Tour &other, std::mt19937 &rng) {
   std::vector<TeamId_t> both_ids(ids);
   both_ids.insert(std::end(both_ids), std::begin(other.ids),
                   std::end(other.ids));
@@ -126,7 +126,7 @@ bool Tour::try_swap(Tour &other) {
   std::cerr << "BothIds " << join<TeamId_t>(both_ids.begin(), both_ids.end())
             << std::endl;
 #endif
-  random_shuffle(std::begin(both_ids), std::end(both_ids));
+  shuffle(std::begin(both_ids), std::end(both_ids), rng);
 #ifdef TRACE_TOUR
   std::cerr << "BothIds shuffle"
             << join<TeamId_t>(both_ids.begin(), both_ids.end()) << std::endl;
