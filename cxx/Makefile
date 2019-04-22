@@ -1,10 +1,10 @@
 CC=gcc
 CXX=g++
 #DEBUG=-ggdb -O0 -march=native
-OPT=-O3 -pg -ggdb
+OPT=-O3
 CFLAGS:=$(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic
 CXXFLAGS:=-std=c++17 $(DEBUG) $(OPT) -W -Wall -Wextra -Wpedantic -pedantic -I.
-LDLIBS:=-l:libboost_program_options.so.1.67.0 -pg
+LDLIBS:=-l:libboost_program_options.so.1.67.0 
 OUTPUT_OPTION=-MMD -MP -o $@
 
 SRC:=$(wildcard *.cc)

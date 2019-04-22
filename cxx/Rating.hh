@@ -19,6 +19,9 @@ public:
   Rating(unsigned int p_tour_length = 0, unsigned int p_length_of_stay = 0)
       : tour_length(p_tour_length), length_of_stay(p_length_of_stay) {}
 
+  void clear() { tour_length = 0; length_of_stay = 0;
+  }
+
   Value operator*(Rating2Value const &r2v) const {
     return tour_length * r2v.get_weight_tour_length() +
            length_of_stay * r2v.get_weight_length_of_stay();

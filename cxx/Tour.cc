@@ -9,8 +9,7 @@ namespace MultiTSP {
 Tour::Tour(DistMatrix const &p_dists, Rating2Value const &p_rating2value,
            TeamSet const &p_teams, unsigned int p_max_places)
     : max_places(p_max_places), dists(p_dists), rating2value(p_rating2value),
-      teams(p_teams), places_used(0) {
-
+      teams(p_teams), places_used(0), rating_is_valid(false) {
   assert(dists.size() > 0);
   assert(dists[0].size() == dists.size());
 }
@@ -55,6 +54,14 @@ unsigned int add_to_rating(Rating &rating, unsigned int spaces_used,
 } // namespace
 
 Rating Tour::compute_rating() const {
+  if (!rating_is_valid) {
+    rating_cached = internal_compute_rating();
+    rating_is_valid = true;
+  }
+  return rating_cached;
+}
+
+Rating Tour::internal_compute_rating() const {
 #ifdef TRACE_TOUR
   std::cerr << "Compute rating Tour " << to_json() << " ";
 #endif
@@ -95,7 +102,7 @@ void Tour::optimize() {
 
   do {
     // ToDo: Optimization: Store Rating and value for further use.
-    Rating const rating(compute_rating());
+    Rating const rating(internal_compute_rating());
     Value const value(rating * rating2value);
 
     if (value < optimal_value) {
@@ -104,6 +111,7 @@ void Tour::optimize() {
 #endif
       optimal_value = value;
       opt = ids;
+      rating_cached = rating;
     }
   } while (std::next_permutation(ids.begin(), ids.end()));
 
@@ -163,9 +171,11 @@ bool Tour::try_swap(Tour &other) {
 
   places_used = n1.places_used;
   ids = n1.ids;
+  rating_is_valid = false;
 
   other.places_used = n2.places_used;
   other.ids = n2.ids;
+  other.rating_is_valid = false;
 
   return true;
 }

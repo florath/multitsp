@@ -92,8 +92,7 @@ int sa(Config const &config, State const &initial_state) {
 
     // Exit algorithm if 5e6 times no better state was
     // accepted (~1h CPU time)
-    //    if (sa_round_with_same_opt_cnt >= 5000000) {
-    if (sa_round_with_same_opt_cnt >= 50000) {
+    if (sa_round_with_same_opt_cnt >= 5000000) {
       opt_state.as_json(std::cout, "final", sa_round_idx);
       std::cout << std::endl;
       return 0;
@@ -118,8 +117,10 @@ int main(int argc, char *argv[]) {
   State state(config.get_tour_cnt(), config.get_spaces_per_tour_cnt(),
               config.get_rating2value(), config.get_teams(), dists);
   state.as_json(std::cout, "random");
+  std::cout << std::endl;
   state.optimize_local();
   state.as_json(std::cout, "radom local optimized");
+  std::cout << std::endl;
 
   sa(config, state);
 
