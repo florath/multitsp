@@ -10,17 +10,19 @@ namespace {
 
 inline double drnadom() { return ((double)random()) / RAND_MAX; }
 
-#if 0
-unsigned int compute_absolut_minimum(DistMatrix const &dists) {
-  unsigned int res(0);
-  for (unsigned int i(0); i < dists.size(); ++i) {
-    res += dists[i][0] + 240; // Fixed entry time
-  }
-  return res;
-}
-#endif
+int sa(Config const &config, unsigned long random_seed) {
 
-int sa(Config const &config, State const &initial_state) {
+  std::mt19937 rng(random_seed);
+
+  DistMatrix const &dists(config.get_distances());
+  State state(config.get_tour_cnt(), config.get_spaces_per_tour_cnt(),
+              config.get_rating2value(), config.get_teams(), dists, rng,
+              random_seed, config.get_host_id());
+  state.as_json(std::cout, "random");
+  std::cout << std::endl;
+  state.optimize_local();
+  state.as_json(std::cout, "random local optimized");
+  std::cout << std::endl;
 
   // This algorithm uses three different state / result pairs:
   // 1. the optimal state
@@ -35,11 +37,11 @@ int sa(Config const &config, State const &initial_state) {
 
   Rating2Value const rating2value(config.get_rating2value());
 
-  State current_state(initial_state);
+  State current_state(state);
   Rating current_rating(current_state.compute_rating());
   Value current_value(current_rating * rating2value);
 
-  State opt_state(initial_state);
+  State opt_state(state);
   Rating opt_rating(opt_state.compute_rating());
   Value opt_value(opt_rating * rating2value);
 
@@ -47,7 +49,7 @@ int sa(Config const &config, State const &initial_state) {
   unsigned long sa_round_with_same_opt_cnt(0);
 
   double temp(1200.0);
-  State new_state(initial_state);
+  State new_state(state);
   // Simulated Annealing
   while (true) {
     // Homogenous chain
@@ -109,20 +111,12 @@ int main(int argc, char *argv[]) {
 
   Config const config(argc, argv);
 
-  DistMatrix const &dists(config.get_distances());
+  std::random_device dev;
+  std::mt19937 rng(dev());
+  std::uniform_int_distribution<std::mt19937::result_type> dist(
+      0, std::numeric_limits<unsigned long>::max());
 
-  //  std::cout << "{\"abs_min\": " << compute_absolut_minimum(dists) << "}"
-  // << std::endl;
-
-  State state(config.get_tour_cnt(), config.get_spaces_per_tour_cnt(),
-              config.get_rating2value(), config.get_teams(), dists);
-  state.as_json(std::cout, "random");
-  std::cout << std::endl;
-  state.optimize_local();
-  state.as_json(std::cout, "radom local optimized");
-  std::cout << std::endl;
-
-  sa(config, state);
+  sa(config, dist(rng));
 
   return 0;
 }

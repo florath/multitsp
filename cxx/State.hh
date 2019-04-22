@@ -1,6 +1,8 @@
 #ifndef MULTI_TSP_STATE_HH
 #define MULTI_TSP_STATE_HH
 
+#include <random>
+
 #include "DistMatrix.hh"
 #include "Rating.hh"
 #include "Rating2Value.hh"
@@ -14,7 +16,8 @@ class State {
 public:
   State(unsigned int tour_cnt, unsigned int spaces_per_tour_cnt,
         Rating2Value const &rating2value, TeamSet const &p_teams,
-        DistMatrix const &p_dists);
+        DistMatrix const &p_dists, std::mt19937 &rng,
+        unsigned long random_seed, std::string const & host_id);
 
   State &operator=(State const &other) {
     this->tours = other.tours;
@@ -36,17 +39,13 @@ private:
   unsigned int const tour_cnt;
   unsigned int const spaces_per_tour_cnt;
   Rating2Value const &rating2value;
+  std::mt19937 &rng;
+  unsigned long const random_seed;
+  std::string const & host_id;
 
   std::vector<Tour> tours;
 };
 
 } // namespace MultiTSP
-
-/*
-inline std::ostream &operator<<(std::ostream &stream,
-                                MultiTSP::State const &state) {
-  return state.print(stream);
-}
-*/
 
 #endif

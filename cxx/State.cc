@@ -25,9 +25,11 @@ void assign_team(Team const &team, std::vector<Tour> &tours) {
 
 State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
              Rating2Value const &p_rating2value, TeamSet const &p_teams,
-             DistMatrix const &p_dists)
+             DistMatrix const &p_dists, std::mt19937 &p_rng,
+             unsigned long p_random_seed, std::string const &p_host_id)
     : teams(p_teams), dists(p_dists), tour_cnt(p_tour_cnt),
-      spaces_per_tour_cnt(p_spaces_per_tour_cnt), rating2value(p_rating2value) {
+      spaces_per_tour_cnt(p_spaces_per_tour_cnt), rating2value(p_rating2value),
+      rng(p_rng), random_seed(p_random_seed), host_id(p_host_id) {
   tours.reserve(tour_cnt);
   for (unsigned int i(0); i < tour_cnt; ++i) {
     tours.push_back(Tour(dists, rating2value, teams, spaces_per_tour_cnt));
@@ -59,6 +61,7 @@ std::ostream &State::as_json(std::ostream &ostr, std::string const &comment,
        << "\", \"rating\": " << rating.as_json() << ", \"value\": " << value
        << ", \"comment\": \"" << comment << "\", \"round\": " << round
        << ", \"cnt\": " << tour_cnt << ", \"spaces\": " << spaces_per_tour_cnt
+       << ", \"random-seed\": " << random_seed << ", \"host-id\": " << host_id
        << ", \"tour\": [" << join<Tour>(tours.begin(), tours.end()) << "]}";
   return ostr;
 }
