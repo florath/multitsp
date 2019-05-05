@@ -15,15 +15,41 @@
 namespace MultiTSP {
 
 namespace {
-void assign_team(Team const &team, std::vector<Tour> &tours) {
+bool assign_team(Team const &team, std::vector<Tour> &tours) {
   for (auto &tour : tours) {
     if (tour.fit(team.get_size())) {
       tour.push_back(team.get_id());
+      return true;
+    }
+  }
+  return false;
+}
+
+bool assign_all(std::vector<Tour> &tours, TeamSet &tc) {
+  for (auto const &team : tc) {
+    if (not assign_team(team, tours)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+void random_start_placement(std::vector<Tour> &tours, TeamSet const &teams,
+                            std::mt19937 &rng) {
+  TeamSet tc(teams);
+  while (true) {
+
+    for (auto &tour : tours) {
+      tour.clear();
+    }
+
+    std::shuffle(tc.begin(), tc.end(), rng);
+    if (assign_all(tours, tc)) {
       return;
     }
   }
-  abort();
 }
+
 } // namespace
 
 State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
@@ -38,15 +64,7 @@ State::State(unsigned int p_tour_cnt, unsigned int p_spaces_per_tour_cnt,
     tours.push_back(Tour(dists, rating2value, teams, spaces_per_tour_cnt));
   }
 
-  // Need to sort the teams: start with the teams with the most members.
-  TeamSet tc(teams);
-  std::sort(tc.begin(), tc.end(), [](Team const &x, Team const &y) -> bool {
-    return x.get_size() > y.get_size();
-  });
-
-  for (auto const &team : tc) {
-    assign_team(team, tours);
-  }
+  random_start_placement(tours, teams, rng);
 }
 
 std::string State::as_json(std::string const &comment,

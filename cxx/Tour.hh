@@ -3,9 +3,9 @@
 
 #include <cassert>
 #include <iostream>
+#include <random>
 #include <string>
 #include <vector>
-#include <random>
 
 #include "DistMatrix.hh"
 #include "Rating.hh"
@@ -37,6 +37,12 @@ public:
     rating_is_valid = other.rating_is_valid;
     rating_cached = other.rating_cached;
     return *this;
+  }
+
+  void clear() {
+    places_used = 0;
+    ids.clear();
+    rating_is_valid = false;
   }
 
   std::string as_json() const;
