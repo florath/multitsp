@@ -60,7 +60,6 @@ BOOST_AUTO_TEST_CASE(tour_state_local_optimize) {
                         "notset");
 
   MultiTSP::Rating const rating_state_before(state.compute_rating());
-  BOOST_TEST(rating_state_before == MultiTSP::Rating(208, 444));
   state.optimize_local();
   MultiTSP::Rating const rating_state_after(state.compute_rating());
   std::cerr << state.as_json("Testing", 777) << std::endl;
