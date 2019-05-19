@@ -52,25 +52,25 @@ def extract_tours(j):
 
 def main():
     teams = get_teams()
-    #best_with_complete_coverage = 9223372036854775807
     team_results = {}
 
-    with open("results/thynias-003.json", "r") as fd:
+    with open(sys.argv[1], "r") as fd:
         for line in fd:
             j = json.loads(line)
-            if j['comment'] != 'final':
+            if j['comment'] != 'final1':
                 rating = j['rating']['length-of-stay']
                 print("Tour rating [%d]" % (rating))
                 tours = extract_tours(j)
                 incomplete_cnts = tuple(check_teams_coverage(tours, teams))
 
                 if incomplete_cnts not in team_results:
-                    team_results[incomplete_cnts] = rating
+                    team_results[incomplete_cnts] = (rating, j)
                 else:
-                    if team_results[incomplete_cnts] > rating:
-                        team_results[incomplete_cnts] = rating
+                    if team_results[incomplete_cnts][0] > rating:
+                        team_results[incomplete_cnts] = (rating, j)
 
-    print("Best with complete coverage: [%s]" % team_results)
+    print("Best with complete coverage:")
+    print(team_results)
 
 if __name__ == '__main__':
     main()
