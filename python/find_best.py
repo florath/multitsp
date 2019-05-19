@@ -42,9 +42,9 @@ class Results:
 def main():
     results = Results("results")
     results.sort_length_of_stay()
-    results.print_head(10)
+    results.print_head(650)
 
-    stats = results.generate_tour_statistics(5)
+    stats = results.generate_tour_statistics(2)
     ostats = collections.OrderedDict(sorted(stats.items(), key=lambda k: k[1]))
 #    print(ostats)
       
